@@ -27,7 +27,7 @@ gmail_show () {
 
 gmail_count () {
   count=$(curl -u $GMAIL_USERNAME:$GMAIL_PASSWORD --silent $URL | awk '/^<fullcount>/' | sed "s/<fullcount>//" | sed 's/<\/fullcount>//')
-  echo $count
+  echo 'Inbox: '$count
 }
 
 _gmail () {
