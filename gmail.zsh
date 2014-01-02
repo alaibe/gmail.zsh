@@ -15,7 +15,7 @@ gmail () {
 }
 
 gmail_ls () {
-  ls=$(curl -u $GMAIL_USERNAME:$GMAIL_PASSWORD --silent $URL | awk 'BEGIN{FS="\n";RS="(</entry>\n)?<entry>"}NR!=1{print "from:", $9, "title:", $2}' | sed -e 's,<[^>]*>,,g' | column -t -s $'\t' | nl)
+  ls=$(curl -u $GMAIL_USERNAME:$GMAIL_PASSWORD --silent $URL | tr -d '\n' | awk -F '<entry>' '{for (i=2; i<=NF; i++) {print $i}}' | sed -n "s/<title>\(.*\)<\/title.*name>\(.*\)<\/name>.*/\2 - \1/p")
   echo $ls
 }
 
