@@ -1,14 +1,12 @@
 URL="https://mail.google.com/mail/feed/atom"
 
 gmail () {
-  case "$1" in
-    show)
-      gmail_show $2
-      ;;
-    *)
-      gmail_ls
-      ;;
-  esac
+  if [ -z "$1" ]
+  then
+    gmail_ls
+  else
+    open $1
+  fi
 }
 
 gmail_ls () {
@@ -16,12 +14,6 @@ gmail_ls () {
 
   res=$((_gmail_header; _gmail_fetch | _gmail_catch_entry) | column -t -s '|')
   echo $res
-}
-
-gmail_show () {
-  number=$1
-  show=$(_gmail_fetch | awk '/^<summary>/' | sed "s/<summary>//" | sed 's/<\/summary>//' | sed -n ${number}p)
-  echo $show
 }
 
 _gmail_count () {
@@ -49,8 +41,7 @@ _gmail () {
   typeset -A opt_args
 
   _arguments \
-    '1: :->cmds' \
-    '*: :->mail_list'
+    '*: :->gmail_ls'
 
   case $state in
     cmds)
