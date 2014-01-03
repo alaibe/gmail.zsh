@@ -44,18 +44,12 @@ _gmail () {
     '*: :->gmail_ls'
 
   case $state in
-    cmds)
-      _arguments '1:Cmds:(ls show count)'
-      ;;
-    *)
-      case $words[2] in
-        show)
-          _mails=( $(gmail_ls | awk '{print $1}') )
-          if [[ $_mails != "" ]]; then
-            _values 'mails' $_mails && ret=0
-          fi
-          ;;
-      esac
+    gmail_ls)
+      _mails=( $(gmail_ls) )
+        if [[ $_mails != "" ]]; then
+          _values 'mails' $_mails && ret=0
+        fi
+        ;;
   esac
 }
 
