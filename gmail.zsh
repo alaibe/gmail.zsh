@@ -5,9 +5,6 @@ gmail () {
     show)
       gmail_show $2
       ;;
-    count)
-      gmail_count
-      ;;
     *)
       gmail_ls
       ;;
