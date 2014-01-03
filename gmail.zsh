@@ -15,19 +15,24 @@ gmail () {
 }
 
 gmail_ls () {
-  ls=$(curl -u $GMAIL_USERNAME:$GMAIL_PASSWORD --silent $URL | tr -d '\n' | awk -F '<entry>' '{for (i=2; i<=NF; i++) {print $i}}' | sed -n "s/<title>\(.*\)<\/title.*name>\(.*\)<\/name>.*/\2 - \1/p")
+  echo "Inbox for $GMAIL_USERNAME, you have $(_gmail_count) unread emails"
+
+  ls=$(_gmail_fetch | tr -d '\n' | awk -F '<entry>' '{for (i=2; i<=NF; i++) {print $i}}' | sed -n "s/<title>\(.*\)<\/title.*name>\(.*\)<\/name>.*/\2 - \1/p")
   echo $ls
 }
 
 gmail_show () {
   number=$1
-  show=$(curl -u $GMAIL_USERNAME:$GMAIL_PASSWORD --silent $URL | awk '/^<summary>/' | sed "s/<summary>//" | sed 's/<\/summary>//' | sed -n ${number}p)
+  show=$(_gmail_fetch | awk '/^<summary>/' | sed "s/<summary>//" | sed 's/<\/summary>//' | sed -n ${number}p)
   echo $show
 }
 
-gmail_count () {
-  count=$(curl -u $GMAIL_USERNAME:$GMAIL_PASSWORD --silent $URL | awk '/^<fullcount>/' | sed "s/<fullcount>//" | sed 's/<\/fullcount>//')
-  echo 'Inbox: '$count
+_gmail_count () {
+  _gmail_fetch | awk '/^<fullcount>/' | sed "s/<fullcount>//" | sed 's/<\/fullcount>//'
+}
+
+_gmail_fetch () {
+  curl -u $GMAIL_USERNAME:$GMAIL_PASSWORD --silent $URL
 }
 
 _gmail () {
