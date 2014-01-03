@@ -14,8 +14,8 @@ gmail () {
 gmail_ls () {
   echo "Inbox for $GMAIL_USERNAME, you have $(_gmail_count) unread emails"
 
-  ls=$(_gmail_fetch | tr -d '\n' | awk -F '<entry>' '{for (i=2; i<=NF; i++) {print $i}}' | sed -n "s/<title>\(.*\)<\/title.*name>\(.*\)<\/name>.*/\2 - \1/p")
-  echo $ls
+  res=$((_gmail_header; _gmail_fetch | _gmail_catch_entry) | column -t -s '|')
+  echo $res
 }
 
 gmail_show () {
@@ -30,6 +30,18 @@ _gmail_count () {
 
 _gmail_fetch () {
   curl -u $GMAIL_USERNAME:$GMAIL_PASSWORD --silent $URL
+}
+
+_gmail_header () {
+  printf "SUBJECT|AUTHOR|RECEIVED|SUMMARY\n"
+}
+
+_gmail_catch_entry () {
+  tr -d '\n' | awk -F '<entry>' '{for (i=2; i<=NF; i++) {print $i}}' | _gmail_format_entry
+}
+
+_gmail_format_entry () {
+  awk -F'[<|>]' '/title/{printf "%s|%s (%s)|%s|%s\n",$3, $27, $31, $17, $7 }'
 }
 
 _gmail () {
