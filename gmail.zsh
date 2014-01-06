@@ -1,15 +1,6 @@
 URL="https://mail.google.com/mail/feed/atom"
 
 gmail () {
-  if [ -z "$1" ]
-  then
-    gmail_ls
-  else
-    open $1
-  fi
-}
-
-gmail_ls () {
   echo "Inbox for $GMAIL_USERNAME, you have $(_gmail_count) unread emails"
 
   res=$((_gmail_header; _gmail_fetch | _gmail_catch_entry) | column -t -s '|')
@@ -35,22 +26,3 @@ _gmail_catch_entry () {
 _gmail_format_entry () {
   awk -F'[<|>]' '/title/{printf "%s|%s (%s)|%s|%s\n",$3, $27, $31, $17, $7 }'
 }
-
-_gmail () {
-  local curcontext="$curcontext" state line
-  typeset -A opt_args
-
-  _arguments \
-    '*: :->gmail_ls'
-
-  case $state in
-    gmail_ls)
-      _mails=( $(gmail_ls) )
-        if [[ $_mails != "" ]]; then
-          _values 'mails' $_mails && ret=0
-        fi
-        ;;
-  esac
-}
-
-compdef _gmail gmail
